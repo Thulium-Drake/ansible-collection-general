@@ -1,4 +1,4 @@
-# Ansible Collection - thulium_drake.roles
+# Ansible Collection - thulium_drake.general
 
 This collection contains all roles I currently have published on Galaxy/Github.
 
