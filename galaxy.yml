@@ -1,6 +1,6 @@
 namespace: thulium_drake
 name: general
-version: 2023.35.0
+version: VERSION
 readme: README.md
 authors:
   - Jeffrey van Pelt <jeff@vanpelt.one>

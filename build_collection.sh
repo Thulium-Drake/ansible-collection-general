@@ -6,7 +6,7 @@ START_DIR=$PWD
 VERSION_FILE=$START_DIR/VERSIONS.md
 COLLECTION_VERSION=$(date +%Y.%W)
 COLLECTION_MINOR=${1:-0}
-rm -rf $START_DIR/roles/* $START_DIR/plugins/*
+rm -rf $START_DIR/roles/* $START_DIR/plugins/* thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 
 echo "|        Role name       | Version |" > $VERSION_FILE
@@ -36,6 +36,7 @@ sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
 
 cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
+git checkout galaxy.yml >/dev/null 2>&1
 echo "Work's done! Run command below to publish:
 
 ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz"
