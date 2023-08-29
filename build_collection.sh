@@ -29,7 +29,7 @@ done
 echo "Processing plugin ansible-merge-vars"
 # 3rd-party stuff that is outside of any existing collection
 mkdir -p $START_DIR/plugins/action
-wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge-vars/master/ansible_merge_vars.py -O $START_DIR/plugins/action/ansible_merge_vars.py
+wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge-vars/master/ansible_merge_vars.py -O $START_DIR/plugins/action/merge_vars.py
 
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
