@@ -7,7 +7,7 @@ VERSION_FILE=$START_DIR/VERSIONS.md
 COLLECTION_VERSION=$(date +%Y.%W)
 COLLECTION_MINOR=${1:-0}
 rm -rf $START_DIR/roles/* $START_DIR/plugins/*
-git reset galaxy.yml
+git checkout galaxy.yml >/dev/null 2>&1
 
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
@@ -33,3 +33,8 @@ wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge
 
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
+
+ansible-galaxy collection build $START_DIR --force
+echo "Work's done! Run command below to publish:
+
+ansible-galaxy collection publish thulium_drake-stuff-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz"

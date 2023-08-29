@@ -2,3 +2,4 @@ roles/*
 plugins/*
 VERSIONS.md
 *.swp
+*.tar.gz

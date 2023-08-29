@@ -1,6 +1,6 @@
 namespace: thulium_drake
 name: stuff
-version: VERSION
+version: 2023.35.0
 readme: README.md
 authors:
   - Jeffrey van Pelt <jeff@vanpelt.one>
