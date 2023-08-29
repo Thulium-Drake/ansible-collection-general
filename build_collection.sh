@@ -37,4 +37,4 @@ sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
 ansible-galaxy collection build $START_DIR --force
 echo "Work's done! Run command below to publish:
 
-ansible-galaxy collection publish thulium_drake-stuff-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz"
+ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz"
