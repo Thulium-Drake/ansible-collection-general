@@ -34,6 +34,7 @@ wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
 
+cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 echo "Work's done! Run command below to publish:
 
