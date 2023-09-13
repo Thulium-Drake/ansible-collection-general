@@ -12,7 +12,7 @@ git checkout galaxy.yml >/dev/null 2>&1
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
 
-for i in $(tea repo s --owner 'Ansible' -o csv -f name,ssh | tail -n+3)
+for i in $(tea repo s --owner 'Ansible' -o csv -f name,ssh role | tail -n+2)
 do
   ROLE_NAME=$(echo $i | cut -d\" -f2 | cut -d- -f2)
   ROLE_SSH_URL=$(echo $i | cut -d\" -f4)
