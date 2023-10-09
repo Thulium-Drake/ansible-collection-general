@@ -1,6 +1,13 @@
 #!/bin/bash
-# Requires tea, Gitea CLI
 # Checks out all stuff from Gitea or other sources and builds collection
+
+TEA_BIN=/tmp/tea
+# Set up tea, gitea CLI
+# Yes, it's probably ugly ;-)
+curl -s $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | egrep 'linux-amd64$') > $TEA_BIN
+chmod +x $TEA_BIN
+
+$TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITEA_URL
 
 START_DIR=$PWD
 VERSION_FILE=$START_DIR/VERSIONS.md
@@ -12,7 +19,7 @@ git checkout galaxy.yml >/dev/null 2>&1
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
 
-for i in $(tea repo s --owner 'Ansible' -o csv -f name,ssh role | tail -n+2)
+for i in $($TEA_BIN repo s --owner 'Ansible' -o csv -f name,ssh role | tail -n+2)
 do
   ROLE_NAME=$(echo $i | cut -d\" -f2 | cut -d- -f2)
   ROLE_SSH_URL=$(echo $i | cut -d\" -f4)
@@ -37,6 +44,5 @@ sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
 cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 git checkout galaxy.yml >/dev/null 2>&1
-echo "Work's done! Run command below to publish:
 
-ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz"
+ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
