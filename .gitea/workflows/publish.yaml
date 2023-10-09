@@ -31,7 +31,7 @@ jobs:
           echo -e "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 0600 ~/.ssh/id_ed25519
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          echo $GALAXY_TOKEN > ~/.galaxy_token
+          echo "token: $GALAXY_TOKEN" > ~/.galaxy_token
           ./build_collection.sh
         env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
