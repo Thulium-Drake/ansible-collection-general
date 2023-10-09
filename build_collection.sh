@@ -1,18 +1,31 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
+# Expects the following envvars set GITEA_USER, GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
 
-TEA_BIN=/tmp/tea
-# Set up tea, gitea CLI
-# Yes, it's probably ugly ;-)
-curl -s $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | egrep 'linux-amd64$') > $TEA_BIN
-chmod +x $TEA_BIN
+# Collect current published version and compare
+COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
 
-$TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITEA_URL
+COLLECTION_GALAXY_VERSION_WEEK=$(echo $COLLECTION_GALAXY_VERSION_FULL | cut -d. -f1-2)
+COLLECTION_GALAXY_VERSION_RELEASE=$(echo $COLLECTION_GALAXY_VERSION_FULL | cut -d. -f3)
 
-START_DIR=$PWD
-VERSION_FILE=$START_DIR/VERSIONS.md
 COLLECTION_VERSION=$(date +%Y.%W)
 COLLECTION_MINOR=${1:-0}
+
+if test "$COLLECTION_GALAXY_VERSION_WEEK" == "$COLLECTION_VERSION"
+then
+  COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
+fi
+
+# Set up tea, gitea CLI
+# Yes, it's probably ugly ;-)
+TEA_BIN=/tmp/tea
+curl -s $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | egrep 'linux-amd64$') > $TEA_BIN
+chmod +x $TEA_BIN
+$TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
+
+# Create collection
+START_DIR=$PWD
+VERSION_FILE=$START_DIR/VERSIONS.md
 rm -rf $START_DIR/roles/* $START_DIR/plugins/* thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 

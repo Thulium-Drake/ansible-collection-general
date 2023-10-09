@@ -1,0 +1,40 @@
+---
+name: Publish
+run-name: Publish collection on Ansible Galaxy
+on:  # yamllint disable-line rule:truthy
+  schedule:
+    - cron: '@weekly'
+  push:
+    branches:
+      - 'master'
+      - 'main'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SSH_KEY }}
+          ssh-known-hosts: ${{ secrets.SSH_HOST_KEY }}
+      - name: Ensure Python
+        uses: https://github.com/actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Ansible
+        run: |
+          python -m pip install ansible
+      - name: Publish to Galaxy
+        run: |
+          cd ${{ gitea.workspace }}
+          echo -e "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 0600 ~/.ssh/id_ed25519
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ./build_collection.sh
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_HOST_KEY }}
+          GITEA_USER: ${{ secrets.CI_GITEA_USER }}
+          GITEA_TOKEN: ${{ secrets.CI_GITEA_TOKEN }}
+          GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
