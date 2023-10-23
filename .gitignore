@@ -1,5 +1,6 @@
 roles/*
 plugins/*
+playbooks/*
 VERSIONS.md
 *.swp
 *.tar.gz

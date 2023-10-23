@@ -26,8 +26,10 @@ $TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
 # Create collection
 START_DIR=$PWD
 VERSION_FILE=$START_DIR/VERSIONS.md
-rm -rf $START_DIR/roles/* $START_DIR/plugins/* thulium_drake-general-*.tar.gz
+rm -rf $START_DIR/{roles,plugins,playbooks} thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
+
+mkdir -p $START_DIR/{roles,plugins,playbooks}
 
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
@@ -43,7 +45,16 @@ do
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
   echo "| $ROLE_NAME | ${ROLE_TAG:-master} |" >> $VERSION_FILE
-  rm -rf .git
+  rm -rf $START_DIR/roles/$ROLE_NAME/.git
+  if test -d playbooks
+  then
+    cd playbooks
+    echo "Processing playbooks for $ROLE_NAME"
+    for i in *.yml
+    do
+      cp $i $START_DIR/playbooks
+    done
+  fi
 done
 
 echo "Processing plugin ansible-merge-vars"
