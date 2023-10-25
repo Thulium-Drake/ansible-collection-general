@@ -69,4 +69,4 @@ cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 git checkout galaxy.yml >/dev/null 2>&1
 
-echo ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
+ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
