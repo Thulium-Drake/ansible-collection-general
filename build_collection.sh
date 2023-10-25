@@ -34,7 +34,7 @@ mkdir -p $START_DIR/{roles,plugins,playbooks}
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
 
-for i in $($TEA_BIN repo s --owner 'Ansible' -o csv -f name,ssh role | tail -n+2)
+for i in $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o csv -f name,ssh role | tail -n+2)
 do
   ROLE_NAME=$(echo $i | cut -d\" -f2 | cut -d- -f2)
   ROLE_SSH_URL=$(echo $i | cut -d\" -f4)
@@ -69,4 +69,4 @@ cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 git checkout galaxy.yml >/dev/null 2>&1
 
-ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
+echo ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
