@@ -1,7 +1,7 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
 # Expects the following envvars set GITEA_USER, GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
-set +e
+set -e
 
 # Collect current published version and compare
 COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
