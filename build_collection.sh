@@ -19,9 +19,13 @@ fi
 # Set up tea, gitea CLI
 # Yes, it's probably ugly ;-)
 TEA_BIN=/tmp/tea
-curl -s $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | egrep 'linux-amd64$') > $TEA_BIN
+curl -s $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | grep -E 'linux-amd64$') > $TEA_BIN
 chmod +x $TEA_BIN
 $TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
+
+# Validate SSH connection to gitea
+GITEA_SSH_URL=$(tea repos s --owner 'Ansible' -lm 1 -o simple -f ssh)
+ssh ${GITEA_SSH_URL%%:*} || exit 1
 
 # Create collection
 START_DIR=$PWD
