@@ -24,7 +24,7 @@ chmod +x $TEA_BIN
 $TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
 
 # Validate SSH connection to gitea
-GITEA_SSH_URL=$(tea repos s --owner 'Ansible' -lm 1 -o simple -f ssh)
+GITEA_SSH_URL=$($TEA_BIN repos s --owner 'Ansible' -lm 1 -o simple -f ssh)
 ssh ${GITEA_SSH_URL%%:*} || exit 1
 
 # Create collection
