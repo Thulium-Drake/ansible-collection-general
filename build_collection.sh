@@ -46,7 +46,7 @@ do
 
   echo "Processing role $ROLE_NAME"
   git clone $ROLE_SSH_URL $START_DIR/roles/$ROLE_NAME >/dev/null 2>&1
-  cd $START_DIR/roles/$ROLE_NAME
+  cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
   echo "| $ROLE_NAME | ${ROLE_TAG:-master} |" >> $VERSION_FILE
