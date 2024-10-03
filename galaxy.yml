@@ -8,4 +8,4 @@ authors:
 description: Collection of all roles I publish on Galaxy/Github and some other tools I use
 license:
   - GPL-2.0-or-later
-repository: https://github.com/ansible_collection_roles
+repository: https://github.com/Thulium-Drake/ansible-collection-general
