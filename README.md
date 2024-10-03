@@ -15,3 +15,5 @@ and their versions can be found [here](../VERSIONS.md)
 Apart from all the roles I have published, this collection also includes the excellent ansible-merge-vars from https://github.com/leapfrogonline/ansible-merge-vars
 
 The reason it's included here, is because a lot of roles I used, use this plugin
+
+NOTE: The repo itself does not contain any roles, they are mirrored on my Github account. You can find them here: https://github.com/Thulium-Drake?language=&page=1&q=ansible-role&sort=name&tab=repositories&type=public (not the forked ones :-) )
