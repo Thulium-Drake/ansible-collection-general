@@ -49,7 +49,7 @@ do
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
-  echo "| $ROLE_NAME | ${ROLE_TAG:-master} |" >> $VERSION_FILE
+  echo "| $ROLE_NAME | ${ROLE_TAG:-master} |" | tee -a $VERSION_FILE
   rm -rf $START_DIR/roles/$ROLE_NAME/.git
   if test -d playbooks
   then
