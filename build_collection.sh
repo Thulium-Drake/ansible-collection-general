@@ -34,6 +34,7 @@ VERSION_FILE=$START_DIR/VERSIONS.md
 rm -rf $START_DIR/{roles,plugins,playbooks} thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 
+echo "Going to process $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o simple -f ssh role | wc -l) roles"
 mkdir -p $START_DIR/{roles,plugins,playbooks}
 
 echo "|        Role name       | Version |" > $VERSION_FILE
