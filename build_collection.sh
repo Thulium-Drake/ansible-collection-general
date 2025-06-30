@@ -22,7 +22,7 @@ fi
 
 # Set up git
 git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
-ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) ssh://\(.ssh_url)"')
+ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.url)"')
 
 # Create collection
 START_DIR=$PWD
@@ -40,7 +40,7 @@ while read ROLE_NAME ROLE_URL
 do
   ROLE_NAME=$(echo $ROLE_NAME | cut -d\" -f2 | cut -d- -f2)
   echo "Processing role $ROLE_NAME"
-  git clone https://$ROLE_URL $START_DIR/roles/$ROLE_NAME
+  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
