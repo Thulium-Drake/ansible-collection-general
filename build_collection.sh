@@ -21,10 +21,6 @@ then
 fi
 
 # Set up git
-echo $GITEA_TOKEN
-echo $GITHUB_SERVER_URL
-
-exit 1
 git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
 ROLE_REPOS=$(curl -H "Authorization: token $GITHUB_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) ssh://\(.ssh_url)"')
 
@@ -34,7 +30,10 @@ VERSION_FILE=$START_DIR/VERSIONS.md
 rm -rf $START_DIR/{roles,plugins,playbooks} thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 
-echo "Going to process $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o simple -f ssh role | wc -l) roles"
+echo -e "$ROLE_REPOS"
+exit 1
+
+echo "Going to process"
 mkdir -p $START_DIR/{roles,plugins,playbooks}
 
 echo "|        Role name       | Version |" > $VERSION_FILE
