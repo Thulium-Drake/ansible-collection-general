@@ -1,6 +1,6 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set GITHUB_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
+# Expects the following envvars set GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
 
 # Variables
 # The UID of the org where all roles are located
@@ -22,7 +22,7 @@ fi
 
 # Set up git
 git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
-ROLE_REPOS=$(curl -H "Authorization: token $GITHUB_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) ssh://\(.ssh_url)"')
+ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) ssh://\(.ssh_url)"')
 
 # Create collection
 START_DIR=$PWD
