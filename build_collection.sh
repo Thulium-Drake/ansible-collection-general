@@ -54,7 +54,7 @@ do
       cp $i $START_DIR/playbooks
     done
   fi
-done
+done < <(echo -e "$ROLE_REPOS")
 
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
