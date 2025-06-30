@@ -30,22 +30,16 @@ VERSION_FILE=$START_DIR/VERSIONS.md
 rm -rf $START_DIR/{roles,plugins,playbooks} thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 
-echo -e "$ROLE_REPOS"
-exit 1
-
-echo "Going to process"
+echo "Going to process $(echo -e "$ROLE_REPOS" | wc -l) roles"
 mkdir -p $START_DIR/{roles,plugins,playbooks}
 
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
 
-for i in $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o csv -f name,ssh role | tail -n+2)
+while read ROLE_NAME ROLE_URL
 do
-  ROLE_NAME=$(echo $i | cut -d\" -f2 | cut -d- -f2)
-  ROLE_SSH_URL=$(echo $i | cut -d\" -f4)
-
   echo "Processing role $ROLE_NAME"
-  git clone $ROLE_SSH_URL $START_DIR/roles/$ROLE_NAME >/dev/null 2>&1
+  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME >/dev/null 2>&1
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
@@ -62,11 +56,6 @@ do
   fi
 done
 
-echo "Processing plugin ansible-merge-vars"
-# 3rd-party stuff that is outside of any existing collection
-mkdir -p $START_DIR/plugins/action
-wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge-vars/master/ansible_merge_vars.py -O $START_DIR/plugins/action/merge_vars.py
-
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
 
@@ -74,4 +63,5 @@ cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 git checkout galaxy.yml >/dev/null 2>&1
 
+exit 1
 ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
