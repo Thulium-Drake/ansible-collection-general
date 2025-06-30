@@ -1,6 +1,6 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
+# Expects the following envvars set: GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
 
 # Variables
 # The UID of the org where all roles are located
@@ -19,6 +19,8 @@ if test "$COLLECTION_GALAXY_VERSION_WEEK" == "$COLLECTION_VERSION"
 then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
+
+echo $GITHUB_SERVER_URL
 
 # Set up git
 git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
