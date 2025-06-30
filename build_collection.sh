@@ -40,7 +40,7 @@ while read ROLE_NAME ROLE_URL
 do
   ROLE_NAME=$(echo $ROLE_NAME | cut -d\" -f2 | cut -d- -f2)
   echo "Processing role $ROLE_NAME"
-  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
+  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME || sleep 3600
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
