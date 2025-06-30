@@ -1,6 +1,10 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set GITEA_USER, GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
+# Expects the following envvars set GITHUB_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
+
+# Variables
+# The UID of the org where all roles are located
+GITEA_ORG_UID=19
 
 # Collect current published version and compare
 COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
@@ -16,17 +20,13 @@ then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
 
-# Set up tea, gitea CLI
-# Yes, it's probably ugly ;-)
-TEA_BIN=/tmp/tea
-curl -L $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | grep -E 'linux-amd64$') -o $TEA_BIN
-chmod +x $TEA_BIN
-$TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
+# Set up git
+echo $GITEA_TOKEN
+echo $GITHUB_SERVER_URL
 
-# Validate SSH connection to gitea
-GITEA_SSH_URL=$($TEA_BIN repos s --owner 'Ansible' -lm 1 -o simple -f ssh)
-echo "Testing connection to ${GITEA_SSH_URL%%:*}"
-ssh ${GITEA_SSH_URL%%:*} || exit 1
+exit 1
+git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
+ROLE_REPOS=$(curl -H "Authorization: token $GITHUB_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) ssh://\(.ssh_url)"')
 
 # Create collection
 START_DIR=$PWD
