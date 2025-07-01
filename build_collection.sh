@@ -1,6 +1,6 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set GITEA_USER, GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
+# Expects the following envvars set: GIT_TOKEN, GIT_USER, GIT_BASE_URL, GIT_ORG_UID and GALAXY_TOKEN
 
 # Collect current published version and compare
 COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
@@ -16,17 +16,12 @@ then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
 
-# Set up tea, gitea CLI
-# Yes, it's probably ugly ;-)
-TEA_BIN=/tmp/tea
-curl -L $(curl -s https://gitea.com/api/v1/repos/gitea/tea/releases/latest | jq -r '.assets[].browser_download_url'  | grep -E 'linux-amd64$') -o $TEA_BIN
-chmod +x $TEA_BIN
-$TEA_BIN login add -n $GITEA_USER -t $GITEA_TOKEN -u $GITHUB_SERVER_URL -i
+# Compose URL for login and configure git to use it
+GIT_LOGIN_URL="https://$GIT_USER:$GIT_TOKEN@$(echo $GIT_BASE_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
+git config --global url."$GIT_LOGIN_URL".insteadOf "$GIT_BASE_URL/"
 
-# Validate SSH connection to gitea
-GITEA_SSH_URL=$($TEA_BIN repos s --owner 'Ansible' -lm 1 -o simple -f ssh)
-echo "Testing connection to ${GITEA_SSH_URL%%:*}"
-ssh ${GITEA_SSH_URL%%:*} || exit 1
+# Collect all roles, name and http clone URL
+ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_BASE_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
 START_DIR=$PWD
@@ -34,19 +29,19 @@ VERSION_FILE=$START_DIR/VERSIONS.md
 rm -rf $START_DIR/{roles,plugins,playbooks} thulium_drake-general-*.tar.gz
 git checkout galaxy.yml >/dev/null 2>&1
 
-echo "Going to process $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o simple -f ssh role | wc -l) roles"
+echo "Going to process $(echo -e "$ROLE_REPOS" | wc -l) roles"
 mkdir -p $START_DIR/{roles,plugins,playbooks}
 
 echo "|        Role name       | Version |" > $VERSION_FILE
 echo "| ---------------------- | ------- |" >> $VERSION_FILE
 
-for i in $($TEA_BIN repo s --owner 'Ansible' -lm 100 -o csv -f name,ssh role | tail -n+2)
+while read ROLE_NAME ROLE_URL
 do
-  ROLE_NAME=$(echo $i | cut -d\" -f2 | cut -d- -f2)
-  ROLE_SSH_URL=$(echo $i | cut -d\" -f4)
-
+  ROLE_NAME=$(echo $ROLE_NAME | cut -d\" -f2 | cut -d- -f2)
   echo "Processing role $ROLE_NAME"
-  git clone $ROLE_SSH_URL $START_DIR/roles/$ROLE_NAME >/dev/null 2>&1
+  ROLE_URL=$(echo $ROLE_URL | tr -d '"')
+
+  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
@@ -61,12 +56,7 @@ do
       cp $i $START_DIR/playbooks
     done
   fi
-done
-
-echo "Processing plugin ansible-merge-vars"
-# 3rd-party stuff that is outside of any existing collection
-mkdir -p $START_DIR/plugins/action
-wget -o /dev/null https://raw.githubusercontent.com/leapfrogonline/ansible-merge-vars/master/ansible_merge_vars.py -O $START_DIR/plugins/action/merge_vars.py
+done < <(echo -e "$ROLE_REPOS")
 
 echo "Updating galaxy.yml"
 sed -i "s/VERSION/$COLLECTION_VERSION.$COLLECTION_MINOR/" $START_DIR/galaxy.yml
