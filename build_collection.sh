@@ -23,7 +23,7 @@ GIT_LOGIN_URL="https://$GIT_USER:$GIT_TOKEN@$(echo $GIT_BASE_URL | sed -E 's|^[a
 echo $GIT_LOGIN_URL
 git config --global url."$GIT_LOGIN_URL".insteadOf "$GIT_BASE_URL/"
 
-ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_BASE_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | \(.name) \(.clone_url)')
+ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_BASE_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
 START_DIR=$PWD
@@ -41,6 +41,8 @@ while read ROLE_NAME ROLE_URL
 do
   ROLE_NAME=$(echo $ROLE_NAME | cut -d\" -f2 | cut -d- -f2)
   echo "Processing role $ROLE_NAME"
+
+  ROLE_URL=$(echo $ROLE_URL | tr -d'"')
 
   echo $ROLE_NAME $ROLE_URL
   echo git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
