@@ -19,8 +19,10 @@ fi
 echo $GITEA_URL
 
 # Set up git
-git config --global url."$GITEA_TOKEN@$GITEA_URL".insteadOf "$GITEA_URL/"
-ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
+# Compose URL for login
+GITEA_LOGIN_URL="https://$GITEA_TOKEN@$(echo $GITEA_URL | cut -d: -f2 | cut -d\\ -f1)"
+git config --global url."$GITEA_LOGIN_URL".insteadOf "$GITEA_URL/"
+ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITEA_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
 START_DIR=$PWD
