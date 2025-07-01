@@ -31,7 +31,3 @@ jobs:
         env:
           ANSIBLE_GALAXY_TOKEN_PATH: '~/.galaxy_token'
           GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
-          GITEA_TOKEN: ${{ secrets.CI_GITEA_TOKEN }}
-          GITEA_USER: ${{ secrets.CI_GITEA_USER }}
-          GITEA_URL: ${{ secrets.CI_GITEA_URL }}
-          GITEA_ORG_UID: ${{ secrets.CI_GITEA_ORG_UID }}

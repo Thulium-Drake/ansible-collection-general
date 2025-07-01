@@ -1,6 +1,6 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set: GITEA_TOKEN, GITEA_USER, GITEA_URL, GITEA_ORG_UID and GALAXY_TOKEN
+# Expects the following envvars set: GIT_TOKEN, GIT_USER, GIT_BASE_URL, GIT_ORG_UID and GALAXY_TOKEN
 
 # Collect current published version and compare
 COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
@@ -16,13 +16,11 @@ then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
 
-echo $GITEA_URL
-
 # Set up git
 # Compose URL for login
-GITEA_LOGIN_URL="https://$GITEA_USER:$GITEA_TOKEN@$(echo $GITEA_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
-git config --global url."$GITEA_LOGIN_URL".insteadOf "$GITEA_URL"
-ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITEA_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
+GIT_LOGIN_URL="https://$GIT_USER:$GIT_TOKEN@$(echo $GIT_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
+git config --global url."$GIT_LOGIN_URL".insteadOf "$GIT_URL"
+ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
 START_DIR=$PWD
