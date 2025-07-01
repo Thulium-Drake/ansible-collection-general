@@ -16,13 +16,11 @@ then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
 
-# Set up git
-echo $GIT_BASE_URL
-# Compose URL for login
+# Compose URL for login and configure git to use it
 GIT_LOGIN_URL="https://$GIT_USER:$GIT_TOKEN@$(echo $GIT_BASE_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
-echo $GIT_LOGIN_URL
 git config --global url."$GIT_LOGIN_URL".insteadOf "$GIT_BASE_URL/"
 
+# Collect all roles, name and http clone URL
 ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_BASE_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
@@ -67,5 +65,4 @@ cd $START_DIR
 ansible-galaxy collection build $START_DIR --force
 git checkout galaxy.yml >/dev/null 2>&1
 
-exit 1
 ansible-galaxy collection publish thulium_drake-general-$COLLECTION_VERSION.$COLLECTION_MINOR.tar.gz
