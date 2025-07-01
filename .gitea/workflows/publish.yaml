@@ -31,3 +31,7 @@ jobs:
         env:
           ANSIBLE_GALAXY_TOKEN_PATH: '~/.galaxy_token'
           GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_BASE_URL: ${{ vars.GIT_BASE_URL }}
+          GIT_USER: ${{ vars.GIT_USER }}
+          GIT_ORG_UID: ${{ vars.GIT_ORG_UID }}
