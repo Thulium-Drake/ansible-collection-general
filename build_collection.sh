@@ -1,10 +1,6 @@
 #!/bin/bash
 # Checks out all stuff from Gitea or other sources and builds collection
-# Expects the following envvars set: GITEA_TOKEN, GITHUB_SERVER_URL and GALAXY_TOKEN
-
-# Variables
-# The UID of the org where all roles are located
-GITEA_ORG_UID=19
+# Expects the following envvars set: GITEA_TOKEN, GITEA_URL, GITEA_ORG_UID and GALAXY_TOKEN
 
 # Collect current published version and compare
 COLLECTION_GALAXY_VERSION_FULL=$(curl -s https://galaxy.ansible.com/api/v3/plugin/ansible/content/published/collections/index/thulium_drake/general/ | jq -r .highest_version.version)
@@ -20,10 +16,10 @@ then
   COLLECTION_MINOR=$(( $COLLECTION_GALAXY_VERSION_RELEASE + 1 ))
 fi
 
-echo $GITHUB_SERVER_URL
+echo $GITEA_URL
 
 # Set up git
-git config --global url."https://$GITEA_TOKEN@$GITHUB_SERVER_URL".insteadOf "$GITHUB_SERVER_URL/"
+git config --global url."https://$GITEA_TOKEN@$GITEA_URL".insteadOf "$GITEA_URL/"
 ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
