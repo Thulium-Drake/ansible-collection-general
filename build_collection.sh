@@ -43,7 +43,7 @@ do
   echo "Processing role $ROLE_NAME"
 
   echo $ROLE_NAME $ROLE_URL
-  git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME || sleep 3600
+  echo git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
   cd $START_DIR/roles/$ROLE_NAME || exit 1
   ROLE_TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
   git checkout $ROLE_TAG >/dev/null 2>&1
