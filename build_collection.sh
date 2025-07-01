@@ -19,7 +19,7 @@ fi
 echo $GITEA_URL
 
 # Set up git
-git config --global url."https://$GITEA_TOKEN@$GITEA_URL".insteadOf "$GITEA_URL/"
+git config --global url."$GITEA_TOKEN@$GITEA_URL".insteadOf "$GITEA_URL/"
 ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITHUB_SERVER_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
