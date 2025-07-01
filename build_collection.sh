@@ -20,6 +20,9 @@ fi
 # Compose URL for login
 GIT_LOGIN_URL="https://$GIT_USER:$GIT_TOKEN@$(echo $GIT_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
 git config --global url."$GIT_LOGIN_URL".insteadOf "$GIT_URL"
+
+echo $GIT_URL
+echo $GIT_LOGIN_URL
 ROLE_REPOS=$(curl -H "Authorization: token $GIT_TOKEN" "$GIT_URL/api/v1/repos/search?q=role&uid=$GIT_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
 # Create collection
