@@ -20,7 +20,7 @@ echo $GITEA_URL
 
 # Set up git
 # Compose URL for login
-GITEA_LOGIN_URL="https://$GITEA_TOKEN@$(echo $GITEA_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
+GITEA_LOGIN_URL="https://token:$GITEA_TOKEN@$(echo $GITEA_URL | sed -E 's|^[a-zA-Z]+://([^/@]+@)?([^:/?#]+).*|\2|')/"
 git config --global url."$GITEA_LOGIN_URL".insteadOf "$GITEA_URL"
 ROLE_REPOS=$(curl -H "Authorization: token $GITEA_TOKEN" "$GITEA_URL/api/v1/repos/search?q=role&uid=$GITEA_ORG_UID&limit=100" | jq '.data[] | "\(.name) \(.clone_url)"')
 
