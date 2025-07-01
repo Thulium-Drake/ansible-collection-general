@@ -42,7 +42,7 @@ do
   ROLE_NAME=$(echo $ROLE_NAME | cut -d\" -f2 | cut -d- -f2)
   echo "Processing role $ROLE_NAME"
 
-  ROLE_URL=$(echo $ROLE_URL | tr -d'"')
+  ROLE_URL=$(echo $ROLE_URL | tr -d '"')
 
   echo $ROLE_NAME $ROLE_URL
   echo git clone $ROLE_URL $START_DIR/roles/$ROLE_NAME
